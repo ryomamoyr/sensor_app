@@ -1,0 +1,31 @@
+/* frontend/src/components/Charts.css */
+
+.charts-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+}
+
+.chart-wrapper {
+    background-color: #1E1E1E;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    height: 500px;
+    /* グラフの高さを固定 */
+}
+
+.chart-wrapper h2 {
+    color: #FFFFFF;
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 20px;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .chart-wrapper {
+        height: 400px;
+    }
+}

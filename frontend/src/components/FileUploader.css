@@ -1,0 +1,64 @@
+/* frontend/src/components/FileUploader.css */
+
+.file-uploader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.file-uploader input[type="file"] {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #555555;
+    border-radius: 4px;
+    background-color: #1E1E1E;
+    color: #FFFFFF;
+}
+
+.file-uploader input[type="file"]::file-selector-button {
+    background-color: #4CAF50;
+    color: #FFFFFF;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.file-uploader input[type="file"]::file-selector-button:hover {
+    background-color: #45a049;
+}
+
+.file-uploader button {
+    background-color: #4CAF50;
+    color: #FFFFFF;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.file-uploader button:hover {
+    background-color: #45a049;
+}
+
+.file-uploader button:disabled {
+    background-color: #555555;
+    cursor: not-allowed;
+}
+
+/* 既存のボタンスタイルに追加 */
+button {
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+button:hover {
+    background-color: #45a049;
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(0);
+}

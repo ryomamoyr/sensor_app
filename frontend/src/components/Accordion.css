@@ -1,0 +1,30 @@
+/* frontend/src/components/Accordion.css */
+
+.accordion {
+    width: 100%;
+}
+
+.accordion-button {
+    background-color: #3A3A3A;
+    color: #FFFFFF;
+    cursor: pointer;
+    padding: 15px;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+    border-radius: 4px;
+}
+
+.accordion-button:hover {
+    background-color: #555555;
+}
+
+.accordion-content {
+    padding: 15px;
+    background-color: #2C2C2C;
+    border-radius: 0 0 8px 8px;
+    margin-top: 5px;
+}
