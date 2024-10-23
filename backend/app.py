@@ -1,5 +1,4 @@
-# src/app.py
-
+import pandas as pd
 import streamlit as st
 from dataloader.toilet import ToiletDataLoader
 from analyser.toilet import ToiletAnalyser
@@ -7,18 +6,42 @@ from visualizer.toilet import ToiletVisualizer
 
 # ページの設定
 st.set_page_config(
-    page_title="トイレセンサデータ分析アプリ",
+    page_title="Sensor Data Analysis App",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
+# センターレイアウト
 st.title("トイレセンサデータ分析アプリ")
 
 # サイドバーにファイルアップロード
-# st.sidebar.header("CSVファイルのアップロード")
-uploaded_files = st.sidebar.file_uploader(
-    "CSVファイルをアップロードしてください", type="csv", accept_multiple_files=True
+st.sidebar.title("Menu")
+menu_option = st.sidebar.selectbox(
+    "Select Analysis Data", ["Toilet", "Trash can", "Other"]
 )
+
+# アップロードされたファイルを格納する変数
+uploaded_files = None
+
+# 選択したメニューに応じたコンテンツを表示
+if menu_option == "Toilet":
+    uploaded_files = st.sidebar.file_uploader(
+        "Toilet: CSVファイルをアップロードしてください",
+        type="csv",
+        accept_multiple_files=True,
+    )
+elif menu_option == "Trash can":
+    uploaded_files = st.sidebar.file_uploader(
+        "Trash can: CSVファイルをアップロードしてください",
+        type="csv",
+        accept_multiple_files=True,
+    )
+elif menu_option == "Other":
+    uploaded_files = st.sidebar.file_uploader(
+        "Other: CSVファイルをアップロードしてください",
+        type="csv",
+        accept_multiple_files=True,
+    )
 
 
 # データのロードと処理をキャッシュ
@@ -27,19 +50,39 @@ def load_and_process(uploaded_files):
     """
     データのロードと処理を行う関数
     Returns:
-        data: ロードしたデータ
-        result_df: 日次利用状況の要約
-        imos_df: IMOSのデータ
-        visualizer: 可視化オブジェクト
+        data (pd.DataFrame): ロードしたデータ
+        result_df (pd.DataFrame): 日次利用状況の要約
+        imos_df (pd.DataFrame): IMOSのデータ
+        visualizer (ToiletVisualizer): 可視化オブジェクト
     """
+    data_frames = []
+    for uploaded_file in uploaded_files:
+        try:
+            df = pd.read_csv(uploaded_file)
+            data_frames.append(df)
+        except Exception as e:
+            st.error(f"ファイルの読み込み中にエラーが発生しました: {e}")
+            st.stop()
+
     loader = ToiletDataLoader()
-    data = loader.read_csv(uploaded_files)
+    try:
+        data = loader.read_csv(data_frames)
+    except Exception as e:
+        st.error(f"ToiletDataLoaderでエラーが発生しました: {e}")
+        st.stop()
 
-    analyser = ToiletAnalyser(data)
-    result_df = analyser.summarize_daily_usage()
-    imos_df = analyser.make_imos_df(result_df)
+    try:
+        analyser = ToiletAnalyser(data)
+        result_df, imos_df = analyser.summarize_daily_usage()
+    except Exception as e:
+        st.error(f"ToiletAnalyserでエラーが発生しました: {e}")
+        st.stop()
 
-    visualizer = ToiletVisualizer(result_df)
+    try:
+        visualizer = ToiletVisualizer(result_df)
+    except Exception as e:
+        st.error(f"ToiletVisualizerの初期化中にエラーが発生しました: {e}")
+        st.stop()
 
     return data, result_df, imos_df, visualizer
 
@@ -49,14 +92,14 @@ def display_charts(visualizer, imos_df):
     col1, col2 = st.columns(2)
 
     with col1:
-        st.subheader("時間帯ごとのトイレ利用台数")
         fig_time = visualizer.plot_usage_over_time(imos_df)
-        st.plotly_chart(fig_time, use_container_width=True)
+        if fig_time:
+            st.plotly_chart(fig_time, use_container_width=True)
 
     with col2:
-        st.subheader("個室ごとの利用回数")
         fig_stall = visualizer.plot_usage_count_by_stall()
-        st.plotly_chart(fig_stall, use_container_width=True)
+        if fig_stall:
+            st.plotly_chart(fig_stall, use_container_width=True)
 
 
 if uploaded_files:
@@ -68,12 +111,8 @@ if uploaded_files:
         st.stop()
 
     # アップロードされたデータのプレビュー
-    st.subheader("アップロードされたデータのプレビュー")
+    st.subheader("data preview")
     st.dataframe(data.head())
-
-    # 分析結果の表示
-    st.subheader("日次利用状況の要約")
-    st.dataframe(result_df)
 
     # 可視化
     display_charts(visualizer, imos_df)
@@ -89,6 +128,7 @@ if uploaded_files:
     )
 else:
     st.info("サイドバーからCSVファイルをアップロードしてください。")
+
 st.markdown(
     """
 ---

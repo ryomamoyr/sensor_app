@@ -1,5 +1,3 @@
-# backend/analyser/toilet.py
-
 import pandas as pd
 import logging
 

@@ -4,20 +4,18 @@ import numpy as np
 import pandas as pd
 
 
-class GarbageDataLoader:
-    def __init__(self, config):
-        self.config = config
+class ToFDataLoader:
+    """ToFセンサのデータを読み込む基底クラス"""
 
-    def read_csv(self, file_list: list[Path | str] | Path | str) -> pd.DataFrame:
-        """ゴミ箱のToFセンサデータを読み込む
+    def read_csv(self, data_frames: list[pd.DataFrame]) -> pd.DataFrame:
+        """ToFセンサデータを読み込む
         Args:
             path_list: list[str | Path] | str | Path : csvのファイルパスのリスト
         Returns:
             df: pd.DataFrame
         """
-        if isinstance(file_list, str):
-            file_list = [file_list]
-        output_df = []
+        if not data_frames:
+            raise ValueError("No data frames to load.")
         for file_path in file_list:
             df = self._load(file_path)
             output_df.append(df)
